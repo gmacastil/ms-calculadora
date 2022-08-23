@@ -12,6 +12,9 @@ public class ControlCalculadora {
 	
 	@Value("${app.message.error}")
 	private String mensajeError;
+	
+	@Value("${app.trm}")
+	private int TRM;
 		
 	@Value("${db.server}")
 	private String server;
@@ -46,6 +49,15 @@ public class ControlCalculadora {
 	@GetMapping("/getdb")
 	public String getInfo() {
 		return user + "," + server;
+	}
+	
+	@GetMapping("/pesos/{a}")
+	public RespuestaTRM convertir(@PathVariable int a) {
+		RespuestaTRM res = new RespuestaTRM();
+		res.setDolares(a / TRM);
+		res.setPesos(a);
+		System.out.println("Operacion pesos: " + a + " TRM:" + TRM);
+		return res;
 	}
 	
 

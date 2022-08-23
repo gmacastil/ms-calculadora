@@ -5,6 +5,8 @@ public class Respuesta {
 	private int b;
 	private int resultado;
 	private String error = "NO";
+	
+	
 
 	public Respuesta() {
 	}
@@ -15,10 +17,10 @@ public class Respuesta {
 		this.resultado = z;
 	}
 
-	public Respuesta(int x, int y, String msj) {
+	public Respuesta(int x, int y, String mensajeError) {
 		this.a = x;
 		this.b = y;
-		this.error = msj;
+		this.error = mensajeError;
 	}
 
 	public String getError() {
