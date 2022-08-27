@@ -15,13 +15,13 @@ pipeline {
 	COLL_SAP="newman/SAP.postman_collection.json"
 	ENV_SAP="newman/SAP.postman_environment.json"
         TEST=false
-	}
+    }
 
     stages {
         
         stage('Build & Deploy Local'){
             when {
-                expression { AMBIENTE == 'local'}
+		    expression { ${AMBIENTE} == 'local'}
             }
             agent { 
                 label 'sap-server'
@@ -29,7 +29,13 @@ pipeline {
 	    steps{
 		script{
 		    // Desplegar en local
-		    sh "echo local"
+			sh "echo ${AMBIENTE}"
+			sh "echo $AMBIENTE"
+			sh "echo $BRANCH_NAME"
+			sh "echo ${BRANCH_NAME}"
+			sh "echo ${env.BRANCH_NAME}"
+			
+		    sh "echo local -----------------------"
 		}
 	    }
 	}
@@ -42,7 +48,7 @@ pipeline {
 	    
         stage('Build & Deploy SAP'){
 	    when {
-                expression { AMBIENTE != 'local'}
+		    expression { ${AMBIENTE} != 'local'}
             }
             agent { 
                 label 'newman-slave'
@@ -57,7 +63,7 @@ pipeline {
 	    
 	stage ('Testing') {
             when {
-                expression { TEST }
+		    expression { ${TEST} }
             }
             agent { 
                 label 'newman-slave'
@@ -70,9 +76,9 @@ pipeline {
 }
 
 def setEnv() {
-	if ("${env.BRANCH}".contains('dev') ) {
+	if ("${env.BRANCH_NAME}".contains('dev') ) {
 		return "dev"
-	} else if ("${env.BRANCH}".contains('main')){
+	} else if ("${env.BRANCH_NAME}".contains('main')){
 		return "main"
 	} 
 }
