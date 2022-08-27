@@ -18,31 +18,22 @@ pipeline {
     }
 
     stages {
-        
+	
         stage('Build & Deploy Local'){
-            //when {
-		//    expression { AMBIENTE == 'local'}
-            //}
-           // agent { 
-             //   label 'sap-server'
-            //}
+            when {
+		expression { AMBIENTE == 'local'}
+            }
+            agent { 
+               label 'sap-server'
+            }
 	    steps{
 		script{
-		    // Desplegar en local
-			sh "echo ${AMBIENTE}"
-			sh "echo $AMBIENTE"
-			sh "echo $BRANCH_NAME"
-			sh "echo ${BRANCH_NAME}"
-			sh "echo ${env.BRANCH_NAME}"
-			
-		    sh "echo local -----------------------"
+		    sh "hostname"
+		    sh "echo git pull"	    
+		    sh "echo ./shutdown.sh"
+	            sh "echo ant clean all"
+		    sh "echo ./hybridserver.sh start"
 		}
-	    }
-	}
-
-        stage('Clone Repo Test'){
-            steps{
-                git url: GITURL_TEST, credentialsId: 'github-user', branch: BRANCH_TEST
 	    }
 	}
 	    
@@ -54,7 +45,10 @@ pipeline {
                 label 'newman-slave'
             }
 	    steps{
-                script{
+		
+		git url: GITURL_TEST, credentialsId: 'github-user', branch: BRANCH_TEST
+		
+		script{
                     //sh "newman run ${COLL_SAP} -e ${ENV_SAP} --folder devops --env-var \"buildName=auto-${BUILD_NUMBER}\" "
                     sh "echo sap"
                 }
@@ -63,14 +57,13 @@ pipeline {
 	    
 	stage ('Testing') {
             when {
-		    expression { TEST }
+		 expression { TEST }
             }
             agent { 
-                label 'newman-slave'
+                label 'master' //winslave
             }
 	    steps {
-        	//build job: 'SAPtest'
-		sh "echo test"
+		sh "echo build job: 'SAPtest'"
 	    }
 	}
     }
@@ -78,9 +71,9 @@ pipeline {
 
 def setEnv() {
 	if ("${env.BRANCH_NAME}".contains('dev') ) {
-		return "dev"
+		return "local"
 	} else if ("${env.BRANCH_NAME}".contains('main')){
-		return "main"
+		return "prd"
 	} 
 }
 
