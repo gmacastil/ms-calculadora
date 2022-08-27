@@ -1,48 +1,28 @@
-def AGENTE = 'none'
-def AMBIENTE = 'none'
-def TEST = false;
-
-node('master') {
-  stage('Agent'){
-    if ("${${env.gitlabSourceBranch}".contains('dev')) {
-	    AMBIENTE = "local"
-        AGENTE = "sap-server"
-	} else if ("${env.gitlabSourceBranch}".contains('main')){
-	    AMBIENTE = "sap"
-        AGENTE = "newman-slave"
-	} 
-  }
-}
-
-
 pipeline {
 
-	agent {
-		label "${AGENTE}"
-	}
+	agent none
 
 	tools {
         maven 'maven386'
     }
     
     environment {
+        AMBIENTE=setEnv()
 		GITURL_TEST = "https://github.com/oacarrillo/SAP.git"
 		BRANCH_TEST = "main"
 		COLL_SAP="newman/SAP.postman_collection.json"
 		ENV_SAP="newman/SAP.postman_environment.json"
+        TEST=false
 	}
 
     stages {
         
-        stage('Clone Repo Test'){
-            steps{
-                git url: GITURL_TEST, credentialsId: 'github-user', branch: BRANCH_TEST
-	        }
-	    }
-	    
-	    stage('Build & Deploy Local'){
-	        when {
+        stage('Build & Deploy Local'){
+            when {
                 expression { AMBIENTE == 'local'}
+            }
+            agent { 
+                label 'sap-server'
             }
 	        steps{
                 script{
@@ -51,10 +31,19 @@ pipeline {
                 }
 	        }
 	    }
+
+        stage('Clone Repo Test'){
+            steps{
+                git url: GITURL_TEST, credentialsId: 'github-user', branch: BRANCH_TEST
+	        }
+	    }
 	    
 	    stage('Build & Deploy SAP'){
 	        when {
                 expression { AMBIENTE != 'local'}
+            }
+            agent { 
+                label 'newman-slave'
             }
 	        steps{
                 script{
@@ -68,9 +57,21 @@ pipeline {
             when {
                 expression { TEST }
             }
+            agent { 
+                label 'newman-slave'
+            }
 		    steps {
                build job: 'SAPtest'
 		    }
 		}
     }
 }
+
+def setEnv() {
+	if ("${env.BRANCH}".contains('dev') ) {
+		return "dev"
+	} else if ("${env.BRANCH}".contains('main')){
+		return "main"
+	} 
+}
+
