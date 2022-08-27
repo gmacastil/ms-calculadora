@@ -1,17 +1,19 @@
 pipeline {
 
-	agent none
+    agent { 
+        label 'master'
+    } 
 
-	tools {
+    tools {
         maven 'maven386'
     }
     
     environment {
         AMBIENTE=setEnv()
-		GITURL_TEST = "https://github.com/oacarrillo/SAP.git"
-		BRANCH_TEST = "main"
-		COLL_SAP="newman/SAP.postman_collection.json"
-		ENV_SAP="newman/SAP.postman_environment.json"
+	GITURL_TEST = "https://github.com/oacarrillo/SAP.git"
+	BRANCH_TEST = "main"
+	COLL_SAP="newman/SAP.postman_collection.json"
+	ENV_SAP="newman/SAP.postman_environment.json"
         TEST=false
 	}
 
@@ -24,46 +26,46 @@ pipeline {
             agent { 
                 label 'sap-server'
             }
-	        steps{
-                script{
-                    // Desplegar en local
-                    sh "echo local"
-                }
-	        }
+	    steps{
+		script{
+		    // Desplegar en local
+		    sh "echo local"
+		}
 	    }
+	}
 
         stage('Clone Repo Test'){
             steps{
                 git url: GITURL_TEST, credentialsId: 'github-user', branch: BRANCH_TEST
-	        }
 	    }
+	}
 	    
-	    stage('Build & Deploy SAP'){
-	        when {
+        stage('Build & Deploy SAP'){
+	    when {
                 expression { AMBIENTE != 'local'}
             }
             agent { 
                 label 'newman-slave'
             }
-	        steps{
+	    steps{
                 script{
                     //sh "newman run ${COLL_SAP} -e ${ENV_SAP} --folder devops --env-var \"buildName=auto-${BUILD_NUMBER}\" "
                     sh "echo sap"
                 }
-	        }
 	    }
+ 	}
 	    
-	    stage ('Testing') {
+	stage ('Testing') {
             when {
                 expression { TEST }
             }
             agent { 
                 label 'newman-slave'
             }
-		    steps {
-               build job: 'SAPtest'
-		    }
-		}
+	    steps {
+        	build job: 'SAPtest'
+	    }
+	}
     }
 }
 
