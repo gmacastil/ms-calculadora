@@ -21,7 +21,7 @@ pipeline {
         
         stage('Build & Deploy Local'){
             when {
-		    expression { ${AMBIENTE} == 'local'}
+		    expression { AMBIENTE == 'local'}
             }
             agent { 
                 label 'sap-server'
@@ -48,7 +48,7 @@ pipeline {
 	    
         stage('Build & Deploy SAP'){
 	    when {
-		    expression { ${AMBIENTE} != 'local'}
+		    expression { AMBIENTE != 'local'}
             }
             agent { 
                 label 'newman-slave'
@@ -63,13 +63,14 @@ pipeline {
 	    
 	stage ('Testing') {
             when {
-		    expression { ${TEST} }
+		    expression { TEST }
             }
             agent { 
                 label 'newman-slave'
             }
 	    steps {
-        	build job: 'SAPtest'
+        	//build job: 'SAPtest'
+		sh "echo test"
 	    }
 	}
     }
