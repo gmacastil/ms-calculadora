@@ -20,12 +20,12 @@ pipeline {
     stages {
         
         stage('Build & Deploy Local'){
-            when {
-		    expression { AMBIENTE == 'local'}
-            }
-            agent { 
-                label 'sap-server'
-            }
+            //when {
+		//    expression { AMBIENTE == 'local'}
+            //}
+           // agent { 
+             //   label 'sap-server'
+            //}
 	    steps{
 		script{
 		    // Desplegar en local
