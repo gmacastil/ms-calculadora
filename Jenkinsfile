@@ -10,10 +10,10 @@ pipeline {
     
     environment {
         AMBIENTE=setEnv()
-	GITURL_TEST = "https://github.com/oacarrillo/SAP.git"
-	BRANCH_TEST = "main"
-	COLL_SAP="newman/SAP.postman_collection.json"
-	ENV_SAP="newman/SAP.postman_environment.json"
+		GITURL_TEST = "https://github.com/oacarrillo/SAP.git"
+		BRANCH_TEST = "main"
+		COLL_SAP="newman/SAP.postman_collection.json"
+		ENV_SAP="newman/SAP.postman_environment.json"
         TEST=false
     }
 
