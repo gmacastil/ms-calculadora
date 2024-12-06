@@ -1,0 +1,18 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  annotations:
+    backstage.io/techdocs-ref: dir:.
+    github.com/project-slug: gmacastil/ms-calculadora
+    sonarqube.org/project-key: ms-calculadora
+  description: Microservicio de calculadora implementado en Java utilizando Spring
+    Framework
+  name: ms-calculadora
+  tags:
+  - java
+  - springframework
+spec:
+  lifecycle: production
+  owner: gmacastil
+  system: dummy
+  type: service
